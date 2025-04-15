@@ -1,0 +1,144 @@
+blueprint:
+  name: Inovelli Matter Switch Config Sequences
+  description: |
+    ## Inovelli Config Button Tap Sequences
+
+    ### This blueprint will create an automation to:
+
+      - Perform predefined actions when the config button on an Inovelli switch is tapped or held
+
+    ### Supported Models
+      - VTM31-SN (White Dimmer Switch)
+      - VTM35-SN (White Fan Switch)
+      - VTM36 (White Fan/Light Canopy Module)
+
+    Version 0.1
+  domain: automation
+  author: harryh
+  homeassistant:
+    min_version: 2024.8.0
+  input:
+    inovelli_events:
+      name: Inovelli Switch Entities
+      icon: mdi:devices  
+      input:
+        entity_config:
+          name: Event Entity for Config
+          description: The Event Entity for Config taps
+          selector:
+            entity:
+              filter:
+                - integration: matter
+                  domain: event
+                  device_class: button
+              multiple: false
+    config_inputs:
+      name: Config
+      icon: mdi:button-pointer
+      collapsed: true
+      input:
+        config1:
+          name: Single
+          description: When Config is pressed 1 time
+          default: []
+          selector:
+            action: {}
+        config2:
+          name: Double
+          description: When Config is pressed 2 times
+          default: []
+          selector:
+            action: {}
+        config3:
+          name: Triple
+          description: When Config is pressed 3 times
+          default: []
+          selector:
+            action: {}
+        config4:
+          name: Quadruple
+          description: When Config is pressed 4 times
+          default: []
+          selector:
+            action: {}
+        config5:
+          name: Quintuple
+          description: When Config is pressed 5 times
+          default: []
+          selector:
+            action: {}
+        configHeld:
+          name: Held
+          description: When Config is held
+          default: []
+          selector:
+            action: {}
+        configReleased:
+          name: Released
+          description: When Config is released
+          default: []
+          selector:
+            action: {}
+  source_url: https://github.com/heywick/homeassistant/blob/main/inovelli-config-button-sequences.yaml
+mode: queued
+max_exceeded: silent
+trigger:
+  - platform: state
+    entity_id: !input entity_config
+    not_from:
+    - unknown
+    - unavailable
+    id: config
+
+condition: []
+
+action:
+- choose:
+  - conditions:
+    - condition: trigger
+      id:
+      - config
+    sequence:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: multi_press_1
+        sequence: !input config1
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: multi_press_2
+        sequence: !input config2
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: multi_press_3
+        sequence: !input config3
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: multi_press_4
+        sequence: !input config4
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: multi_press_5
+        sequence: !input config5
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: long_press
+        sequence: !input configHeld
+      - conditions:
+        - condition: state
+          entity_id: !input entity_config
+          attribute: event_type
+          state: long_release
+        sequence: !input configReleased
